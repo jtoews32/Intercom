@@ -95,10 +95,7 @@ static void adcSample(void) {
 }
 
 static void adcRecord(void) {
-
 	int  totalSampleCount = sampleCounter;
-
-
 	UINT bw = 0;
 	int copyCounter = 0;
 
@@ -121,7 +118,7 @@ static void adcRecord(void) {
 		uint8_t audioData[2];
 		audioData[0] = cacheBuffer[copyCounter++];
 		audioData[1] = cacheBuffer[copyCounter++];
-		int length = UTIL1_strlen((uint8_t ) audioData);
+		int length = UTIL1_strlen((uint8_t ) audioData); // or 2
 
 		if (FAT1_write(&fpData, audioData, length, &bw) != FR_OK) {
 			FAT1_close(&fpData);
@@ -129,42 +126,6 @@ static void adcRecord(void) {
 		}
 	}
 	FAT1_close(&fpData);
-
-
-
-
-	/*
-	if (FAT1_Init() != ERR_OK) {
-		DataLoggerError();
-	}
-	if (FAT1_mount(&fileSystemObject, (const TCHAR*) "0", 1) != FR_OK) {
-		DataLoggerError();
-	}
-	if (FAT1_open(&fpData, "./short1.raw", FA_OPEN_ALWAYS|FA_WRITE) != FR_OK) {
-		DataLoggerError();
-	}
-	if (FAT1_lseek(&fpData, fpData.fsize) != FR_OK || fpData.fptr != fpData.fsize) {
-		DataLoggerError();
-	}
-	while(TRUE) {
-		if(copyCounter >= totalSampleCount) {
-			break;
-		}
-		uint8_t audioData[2];
-		audioData[0] = cacheBuffer[copyCounter++]; // (sample >> 8) & 0x00ff;
-		audioData[1] = cacheBuffer[copyCounter++]; // 0; // sample & 0x00ff;
-		int length = 2; // UTIL1_strlen((uint8_t *) audioData);
-
-		if (FAT1_write(&fpData, audioData, length, &bw) != FR_OK) {
-			FAT1_close(&fpData);
-			break;
-		}
-	}
-	FAT1_close(&fpData);
-
-*/
-	// copyCounter = 0;
-
 }
 
 void samplerTickTask(void *param) {
@@ -184,6 +145,20 @@ void recorderTask(void *param) {
 		}
 	}
 }
+
+/*
+if (FAT1_open(&fp, "./bench.txt", FA_READ)!=FR_OK) {
+    FSSH1_SendStr((const unsigned char*)"*** Failed opening benchmark file!\r\n", io->stdErr);
+    return;
+  }
+  for(i=0;i<10000;i++) {
+    if (FAT1_read(&fp, &read_buf[0], sizeof(read_buf), &bw)!=FR_OK) {
+      FSSH1_SendStr((const unsigned char*)"*** Failed reading file!\r\n", io->stdErr);
+      (void)FAT1_close(&fp);
+      return;
+    }
+  }
+ */
 
 /* User includes (#include below this line is not maintained by Processor Expert) */
 
